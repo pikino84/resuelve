@@ -28,6 +28,10 @@ if(isset($_POST['value_json'] )&& $_POST['value_json']  != ''){
 }else{
     $error = "JSON no valido";
 }
+/**
+ * getMetaIndividual funcion que recibe el Nivel de cada uno de los jugadores y 
+ * devuelve la cantidad de goles que debe obtener un jugador deacuerdo a su nivel
+ **/
 function getMetaIndividual($nivel){
     $nivel = strtoupper($nivel);
     switch($nivel){
@@ -49,6 +53,11 @@ function getMetaIndividual($nivel){
     }
     return $meta;
 }
+/**
+ * obtenerGoles funcion que recibe el array con la información de los jugadores
+ * la cual devuelve un array con el cual agrupa a los jugadores por equipo con sus
+ * goles obtenidos y su objetivo de goles
+ **/
 function obtenerGoles($json_array){
     $goles_alcance = array();
     $goles_meta = array();
@@ -62,6 +71,10 @@ function obtenerGoles($json_array){
     }
     return $result = array('goles_alcance' => $goles_alcance, 'goles_meta' => $goles_meta);
 }
+/** golesByTeam función que recibe los goles obtenidos y los objetivos en goles
+ * por equipo. Y devuelve el total de goles obtenidos por equipo, la meta en goles 
+ * a obtener por equipo y a cantidad de jugadores totales por equipo
+ **/
 function golesByTeam($goles_alcance, $goles_meta){
     $equipo_alcance = array();
     $equipo_meta = array();
@@ -69,7 +82,7 @@ function golesByTeam($goles_alcance, $goles_meta){
     foreach($goles_alcance as $equipo => $gol){
         $a = 0;
         $m = 0;
-        //seobtienen los jugadores totales por equipo
+        //se obtienen los jugadores totales por equipo
         $jugadores = count($goles_alcance[$equipo]);
         $a = array_sum($goles_alcance[$equipo]);
         $m = array_sum($goles_meta[$equipo]);
@@ -79,10 +92,13 @@ function golesByTeam($goles_alcance, $goles_meta){
     }
     return $result = array('equipo_alcance' => $equipo_alcance, 'equipo_meta' => $equipo_meta, 'equipo_jugadores' => $equipo_jugadores);
 }
+/** formatCoin función que recibe una cantidad dada y la devuelve en formato de moneda americano **/
 function formatCoin($amount){
 	$amount = number_format($amount, 2, '.', ',');
 	return $amount;
 }
+/** json_validate función que recibe un JSON y devuelve un mensaje de error en caso
+ *  de que exista un error con el JSON  **/
 function json_validate($string){
     // decode the JSON data
     $result = json_decode($string);
@@ -90,7 +106,7 @@ function json_validate($string){
     // switch muestra los posibles errores
     switch (json_last_error()) {
         case JSON_ERROR_NONE:
-            $error = true; // JSON valido // sin errores
+            $error = true; // JSON válido // sin errores
             break;
         case JSON_ERROR_DEPTH:
             $error = 'The maximum stack depth has been exceeded.';
@@ -125,29 +141,32 @@ function json_validate($string){
     }
     return $error;
 }
+/** validate función que valida cada uno de los campos y valores (key, value) del JSON recibido
+ * por el cliente, previamente convertido en array, en cado de existir error lo devuelve de lo contrario 
+ * devuelve un valor vacío*/
 function validate($json_array){
     $error = "";
     foreach($json_array as $key => $value){
         // validando la llave nivel
         if( array_key_exists('nivel', $value) ){
             if( !ctype_alpha($value['nivel']) ){
-                $error =  "El campo nivel no es valido";
+                $error =  "El campo nivel no es válido";
                 break;
             }
         }elseif( array_key_exists('goles_minimos', $value) ){
             if(!is_numeric($value['goles_minimos']) || $value['goles_minimos'] <= 0){
-                $error = "El campo goles minimos no es valido";
+                $error = "El campo goles mínimos no es válido";
                 break;
             }    
         }else{
-            $error =  "Se requiere el campo nivel o el campo goles minimos";
+            $error =  "Se requiere el campo nivel o el campo goles mínimos";
             break;
         }
         
         //validando la llave nombre
         if( array_key_exists('nombre', $value) ){
             if(!is_string($value['nombre'])){
-                $error =  "El campo nombre no es valido";
+                $error =  "El campo nombre no es válido";
                 break;
             }
         }else{
@@ -157,7 +176,7 @@ function validate($json_array){
         //validando la llave goles
         if( array_key_exists('goles', $value) ){
             if(!is_numeric($value['goles']) || $value['goles'] <= 0){
-                $error =  "El campo goles no es valido";
+                $error =  "El campo goles no es válido";
                 break;
             }
         }else{
@@ -167,7 +186,7 @@ function validate($json_array){
         //validando la llave sueldo
         if( array_key_exists('sueldo', $value) ){
             if(!is_numeric($value['sueldo']) || $value['sueldo'] <= 0){
-                $error =  "El campo sueldo no es valido";
+                $error =  "El campo sueldo no es válido";
                 break;
             }
         }else{
@@ -177,7 +196,7 @@ function validate($json_array){
         //validando la llave bono
         if( array_key_exists('bono', $value) ){
             if(!is_numeric($value['bono']) || $value['bono'] <= 0){
-                $error =  "El campo bono no es valido";
+                $error =  "El campo bono no es válido";
                 break;
             }
         }else{
@@ -187,7 +206,7 @@ function validate($json_array){
         //validando la llave equipo
         if( array_key_exists('equipo', $value) ){
             if(!is_string($value['equipo'])){
-                $error =  "El campo equipo no es valido";
+                $error =  "El campo equipo no es válido";
                 break;
             }
         }else{
@@ -197,6 +216,10 @@ function validate($json_array){
     }
     return $error;
 }
+/** alcances función que recibe los goles obtenidos y los goles requeridos y devuelve el alcance
+ * ya sea individual o por equipo funciona para ambos casos y valida que el alcance no sea
+ * mayor a 100% ni menor a 0%.
+*/
 function alcances($meta_lograda, $meta){
     //Si la meta es negativa no gana el bono
     if($meta < 0){
@@ -215,22 +238,28 @@ function alcances($meta_lograda, $meta){
     }
     return $x;
 }
+/**calculaSueldo función que recibe el alcance individual, el alcance en equipo, el numero de jugadores 
+ * el monto máximo en bono y el sueldo base. La cual devuelve el sueldo total por jugador.
+*/
 function calculaSueldo($alcance_individual, $alcance_equipo, $jugadores, $bono, $sueldo_base){
     $alcance_compuesto = ($alcance_individual + $alcance_equipo) / $jugadores;
     $bono_lacanzado = ($alcance_compuesto / 100) * $bono;
     $sueldo_total = $sueldo_base + $bono_lacanzado;
     return $sueldo_total;
 }
+/** getInfo función que recibe el JSON original convertido en array, el alcance por equipo, el objetivo por
+ * equipo y número de jugadores y devuelve un array con la información anexada.
+ */
 function getInfo($json_array, $equipo_alcance, $equipo_meta, $equipo_jugadores){
     foreach($json_array as $key => $value){
-        // se obtiene el numero de goles requeridos de acuerdo al nivel
+        // se obtiene el número de goles requeridos de acuerdo al nivel
         if( array_key_exists('nivel', $value) ){
             $meta_individual = getMetaIndividual($value['nivel']);
         }else{
             $meta_individual = $value['goles_minimos'];
         }
         $json_array[$key]['nivel_goles'] = $meta_individual;
-        //Se obtine el porcentaje de alcance de manera individual.
+        //Se obtiene el porcentaje de alcance de manera individual.
         $alcance_individual = alcances($value['goles'], $meta_individual);
         $json_array[$key]['porcentaje_individual'] = $alcance_individual; 
         //se obtiene el porcentaje de alcance en equipo
@@ -240,6 +269,9 @@ function getInfo($json_array, $equipo_alcance, $equipo_meta, $equipo_jugadores){
     }
     return $json_array;
 }
+/** result función que recibe el array con la información anexada y  genera la vista final 
+ * a devolver al cliente con los resultados requeridos 
+ **/
 function result($json_array){
     $result='
         <div class="col-md-12 show_response">
@@ -269,12 +301,15 @@ function result($json_array){
         </div>';
     return $result;
 }
+/**Si existe algún error durante la lectura, análisis y/o procesamiento de los datos del array
+*se devuelve $error con una vista para el cliente
+*/
 $show_error = '<div class="show_error alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>¡Error! </strong> '.$error.'
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>';
-
+/**Se regresa un array en formato JSON al cliente* */
 $data = array('error'=> $error, 'show_error' => $show_error, 'content' => $content);
 echo $data = json_encode($data);
