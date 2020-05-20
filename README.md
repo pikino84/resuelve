@@ -77,7 +77,7 @@ Posibles estructuras permitidas JSON:
    }
 ]
 ```
-## Probar la aplicación
+## Puesta en marcha
 1. Montar un servidor web en tu equipo usando alguno de los siguientes servicios:
 * [XAMPP](https://www.apachefriends.org/es/index.html) para Window, Mac o Linux
 * [WAMPP](https://sourceforge.net/projects/wampserver/) para Windows
@@ -85,7 +85,7 @@ Posibles estructuras permitidas JSON:
 * [LAMP](https://www.digitalocean.com/community/tutorials/como-instalar-linux-apache-mysql-php-lamp-en-ubuntu-16-04-es) para Linux
 2. Clonar el proyecto en la carpeta root de tu servidor local; por default es htdocs.
 3. Abrir la aplicación e inicia el servicio Apache Web Server.
-3. Abrir un navegador web con la siguiente dirección **http://localhost/resuelve/**
+3. Abrir un navegador web la siguiente dirección **http://localhost/resuelve/**
 ## Requerimientos de código
 El código debe funcionar en una instalación PHP 7.2 en vanilla. Tenga esto en cuenta antes de hacer un pull request.
 ## Para probar en línea
